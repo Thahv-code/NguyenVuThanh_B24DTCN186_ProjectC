@@ -89,7 +89,7 @@ account fakeAccounts[5] = {
     {5, "Hoang Van E", "0000000005", 1, 5000}
 };
 
-void sortByBalanceDesc(account accounts[], int accountCount)
+void sortBalance(account accounts[], int accountCount)
 {
     for (int i = 0; i < accountCount - 1; i++)
     {
@@ -106,7 +106,7 @@ void sortByBalanceDesc(account accounts[], int accountCount)
     printf("Danh sach da duoc sap xep theo so du giam dan.\n");
 }
 
-void sortByNameAsc(account accounts[], int accountCount)
+void sortName(account accounts[], int accountCount)
 {
     for (int i = 0; i < accountCount - 1; i++)
     {
@@ -592,10 +592,10 @@ void sortAccounts(account accounts[], int accountCount) {
         choice = atoi(choiceStr);
 
         if (choice == 1) {
-            sortByBalanceDesc(accounts, accountCount);
+            sortBalance(accounts, accountCount);
             break;
         } else if (choice == 2) {
-            sortByNameAsc(accounts, accountCount);
+            sortName(accounts, accountCount);
             break;
         } else {
             printf("Lua chon khong hop le.\n");
