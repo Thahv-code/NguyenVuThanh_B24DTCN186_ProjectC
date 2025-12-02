@@ -29,7 +29,6 @@ int isSpace(const char *str)
     {
         return 1;
     }
-
     while (*str)
     {
         if (!isspace((unsigned char)*str))
@@ -72,6 +71,16 @@ int isValidPhone(const char *phone)
 
 #define MAX_ACCOUNT 50
 
+typedef struct transaction
+{
+    int fromId;
+    int toId;
+    int amount;
+    int senderId;
+    int receiverId;
+    char note[100];
+} transaction;
+
 typedef struct account
 {
     int id;
@@ -83,20 +92,18 @@ typedef struct account
 
 account fakeAccounts[5] = {
     {1, "Nguyen Van A", "0000000001", 1, 1000},
-    {2, "Tran Thi B", "0000000002", 1, 2000},
-    {3, "Le Van C", "0000000003", 1, 3000},
-    {4, "Pham Thi D", "0000000004", 1,4000},
-    {5, "Hoang Van E", "0000000005", 1, 5000}
+    {2, "Nguyen Van B", "0000000002", 1, 2000},
+    {3, "Nguyen Van C", "0000000003", 1, 3000},
+    {4, "Nguyen Van D", "0000000004", 1, 4000},
+    {5, "Nguyen Van E", "0000000005", 1, 5000}
 };
 
 void sortBalance(account accounts[], int accountCount)
 {
     for (int i = 0; i < accountCount - 1; i++)
     {
-        for (int j = 0; j < accountCount - i - 1; j++)
-        {
-            if (accounts[j].balance < accounts[j + 1].balance)
-            {
+        for (int j = 0; j < accountCount - i - 1; j++) {
+            if (accounts[j].balance < accounts[j + 1].balance) {
                 account temp = accounts[j];
                 accounts[j] = accounts[j + 1];
                 accounts[j + 1] = temp;
@@ -108,12 +115,9 @@ void sortBalance(account accounts[], int accountCount)
 
 void sortName(account accounts[], int accountCount)
 {
-    for (int i = 0; i < accountCount - 1; i++)
-    {
-        for (int j = 0; j < accountCount - i - 1; j++)
-        {
-            if (strcmp(accounts[j].fullName, accounts[j + 1].fullName) > 0)
-            {
+    for (int i = 0; i < accountCount - 1; i++) {
+        for (int j = 0; j < accountCount - i - 1; j++) {
+            if (strcmp(accounts[j].fullName, accounts[j + 1].fullName) > 0) {
                 account temp = accounts[j];
                 accounts[j] = accounts[j + 1];
                 accounts[j + 1] = temp;
@@ -168,6 +172,7 @@ int getNumber(char suggest[], int min, int max)
     }
 }
 
+// TẠO TÀI KHOẢN
 void addNewAccount(account accounts[], int *accountCount)
 {
     if (*accountCount >= MAX_ACCOUNT)
@@ -182,20 +187,19 @@ void addNewAccount(account accounts[], int *accountCount)
     char phoneNumber[12];
     char idStr[20];
 
-    // Nhập ID
+    // nhập id
     do
     {
         printf("Nhap id nguoi dung: ");
         fgets(idStr, sizeof(idStr), stdin);
         idStr[strcspn(idStr, "\n")] = '\0'; // bỏ ký tự xuống dòng
-
         if (isSpace(idStr))
         {
             printf("ID khong duoc de trong.\n");
             continue;
         }
 
-        // Kiểm tra ID là số
+        // ktra id la so nguyen
         int valid = 1;
         for (int i = 0; idStr[i]; i++)
         {
@@ -210,14 +214,12 @@ void addNewAccount(account accounts[], int *accountCount)
             printf("ID phai la so nguyen.\n");
             continue;
         }
-
         id = atoi(idStr);
         if (id <= 0)
         {
             printf("ID phai la so nguyen duong.\n");
             continue;
         }
-
         int duplicate = 0;
         for (int i = 0; i < *accountCount; i++)
         {
@@ -229,13 +231,11 @@ void addNewAccount(account accounts[], int *accountCount)
             }
         }
         if (duplicate)
-            continue;
+            continue; // chạy lại nếu trùng
 
         break;
-
     } while (1);
-
-    // Nhập họ tên
+// nhập tên
     do
     {
         printf("Nhap ho ten: ");
@@ -249,8 +249,7 @@ void addNewAccount(account accounts[], int *accountCount)
         }
         break;
     } while (1);
-
-    // Nhập số điện thoại
+// nhập sđt
     do
     {
         printf("Nhap so dien thoai: ");
@@ -264,7 +263,7 @@ void addNewAccount(account accounts[], int *accountCount)
         }
         break;
     } while (1);
-
+// cho dữ liệu vào tk mới
     acc->id = id;
     strcpy(acc->fullName, fullName);
     strcpy(acc->phoneNumber, phoneNumber);
@@ -274,24 +273,22 @@ void addNewAccount(account accounts[], int *accountCount)
     printf("Them tai khoan thanh cong!\n");
 }
 
+// CẬP NHẬT TÀI KHOẢN
 void updateAccount(account accounts[], int accountCount)
 {
     char idStr[20];
     int id;
-
     // Nhập ID
     while (1)
     {
         printf("Nhap ID tai khoan can cap nhat: ");
         fgets(idStr, sizeof(idStr), stdin);
         idStr[strcspn(idStr, "\n")] = '\0'; // bỏ ký tự xuống dòng
-
         if (isSpace(idStr))
         {
             printf("ID khong duoc de trong.\n");
             continue;
         }
-
         // Kiểm tra ID là số
         int valid = 1;
         for (int i = 0; idStr[i]; i++)
@@ -316,7 +313,6 @@ void updateAccount(account accounts[], int accountCount)
         }
         break;
     }
-
     // Tìm tài khoản
     int found = -1;
     for (int i = 0; i < accountCount; i++)
@@ -333,7 +329,6 @@ void updateAccount(account accounts[], int accountCount)
         printf("Khong tim thay tai khoan nay.\n");
         return;
     }
-
     printf("Nhap ho ten moi (Enter de bo qua): ");
     char newName[50];
     fgets(newName, sizeof(newName), stdin);
@@ -342,7 +337,6 @@ void updateAccount(account accounts[], int accountCount)
         newName[strcspn(newName, "\n")] = '\0';
         strcpy(accounts[found].fullName, newName);
     }
-
     printf("Nhap sdt moi (Enter de bo qua): ");
     char newPhone[12];
     fgets(newPhone, sizeof(newPhone), stdin);
@@ -351,10 +345,10 @@ void updateAccount(account accounts[], int accountCount)
         newPhone[strcspn(newPhone, "\n")] = '\0';
         strcpy(accounts[found].phoneNumber, newPhone);
     }
-
     printf("Cap nhat thanh cong!\n");
 }
 
+// HIỂN THỊ DANH SÁCH TÀI KHOẢN
 void displayAccount(account accounts[], int accountCount)
 {
     if (accountCount == 0)
@@ -377,6 +371,7 @@ void displayAccount(account accounts[], int accountCount)
     printf("||==========================================================================||\n");
 }
 
+// XÓA HOẶC KHÓA TK
 void lockOrDeleteAccount(account accounts[], int *accountCount)
 {
     if (*accountCount == 0)
@@ -384,10 +379,8 @@ void lockOrDeleteAccount(account accounts[], int *accountCount)
         printf("Loi: Chua co tai khoan nao.\n");
         return;
     }
-
     char idStr[20];
     int id;
-
     // Nhập ID
     while (1)
     {
@@ -400,7 +393,7 @@ void lockOrDeleteAccount(account accounts[], int *accountCount)
             printf("Loi: ID khong duoc de trong.\n");
             continue;
         }
-
+        
         // Kiểm tra ID là số
         int valid = 1;
         for (int i = 0; idStr[i]; i++)
@@ -425,7 +418,6 @@ void lockOrDeleteAccount(account accounts[], int *accountCount)
         }
         break;
     }
-
     // Tìm tài khoản
     int found = -1;
     for (int i = 0; i < *accountCount; i++)
@@ -436,20 +428,18 @@ void lockOrDeleteAccount(account accounts[], int *accountCount)
             break;
         }
     }
-
     if (found == -1)
     {
         printf("Khong tim thay tai khoan voi ID %d.\n", id);
         return;
     }
-
     printf("Tai khoan hien tai: ID=%d | Ten=%s | SDT=%s | Trang thai=%s\n",
            accounts[found].id,
            accounts[found].fullName,
            accounts[found].phoneNumber,
            accounts[found].status == 1 ? "Active" : "Locked");
+  
 
-    // Nhập lựa chọn
     int choice;
     char choiceStr[20];
     while (1)
@@ -519,6 +509,8 @@ void lockOrDeleteAccount(account accounts[], int *accountCount)
     }
 }
 
+
+// TÌM TK
 void searchAccount(account accounts[], int accountCount)
 {
     char keyword[50];
@@ -572,6 +564,7 @@ void searchAccount(account accounts[], int accountCount)
         printf("Khong tim thay tai khoan nao\n");
 }
 
+// SẮP XẾP TK
 void sortAccounts(account accounts[], int accountCount) {
     char choiceStr[10];
     int choice;
@@ -588,9 +581,7 @@ void sortAccounts(account accounts[], int accountCount) {
             printf("Lua chon khong duoc de trong.\n");
             continue;
         }
-
         choice = atoi(choiceStr);
-
         if (choice == 1) {
             sortBalance(accounts, accountCount);
             break;
@@ -603,8 +594,130 @@ void sortAccounts(account accounts[], int accountCount) {
     }
 }
 
-    int main()
+// CHUYỂN TIỀN
+void transferMoney(account accounts[], int accountCount, transaction trans[], int *transCount)
 {
+    int senderId, receiverId, amount;
+
+    printf("Nhap ID nguoi gui: ");
+    scanf("%d", &senderId);
+    getchar();
+
+    printf("Nhap ID nguoi nhan: ");
+    scanf("%d", &receiverId);
+    getchar();
+
+    printf("Nhap so tien can chuyen: ");
+    scanf("%d", &amount);
+    getchar();
+
+    int senderIndex = -1, receiverIndex = -1;
+
+    for (int i = 0; i < accountCount; i++)
+    {
+        if (accounts[i].id == senderId)
+            senderIndex = i;
+        if (accounts[i].id == receiverId)
+            receiverIndex = i;
+    }
+
+    if (senderIndex == -1 || receiverIndex == -1)
+    {
+        printf("ID nguoi gui/nhan khong ton tai.\n");
+        return;
+    }
+
+    if (senderId == receiverId)
+    {
+        printf("Nguoi gui va nguoi nhan phai khac nhau.\n");
+        return;
+    }
+
+    if (accounts[senderIndex].status == 0)
+    {
+        printf("Tai khoan nguoi gui dang bi khoa.\n");
+        return;
+    }
+
+    if (amount <= 0)
+    {
+        printf("So tien khong hop le.\n");
+        return;
+    }
+
+    if (accounts[senderIndex].balance < amount)
+    {
+        printf("Nguoi gui khong du tien trong tai khoan.\n");
+        return;
+    }
+
+    accounts[senderIndex].balance -= amount;
+    accounts[receiverIndex].balance += amount;
+
+    trans[*transCount].senderId = senderId;
+    trans[*transCount].receiverId = receiverId;
+    trans[*transCount].amount = amount;
+    strcpy(trans[*transCount].note, "Chuyen khoan thanh cong");
+    (*transCount)++;
+
+    printf("Chuyen khoan thanh cong!\n");
+}
+
+// HIỆN THỊ LỊCH SỬ CHUYỂN TIỀN
+void viewHistory(account accounts[], int accountCount, transaction trans[], int transCount)
+{
+    int targetId;
+    printf("Nhap ID tai khoan muon xem: ");
+    scanf("%d", &targetId);
+
+    // validate tk
+    int found = 0;
+    for (int i = 0; i < accountCount; i++)
+    {
+        if (accounts[i].id == targetId)
+        {
+            found = 1;
+            break;
+        }
+    }
+    if (!found)
+    {
+        printf("Tai khoan khong ton tai!\n");
+        return;
+    }
+    if (transCount == 0)
+    {
+        printf("He thong chua co giao dich nao!\n");
+        return;
+    }
+    printf("\n===== LICH SU GIAO DICH CUA %d =====\n", targetId);
+    int hasTrans = 0;
+    for (int i = 0; i < transCount; i++)
+    {
+        if (trans[i].fromId == targetId)
+        {
+            printf("OUT: Gui %d -> tai khoan %d (So tien: %d)\n",
+                   targetId, trans[i].toId, trans[i].amount);
+            hasTrans = 1;
+        }
+        if (trans[i].toId == targetId)
+        {
+            printf("IN: Nhan tu tai khoan %d -> %d (So tien: %d)\n",
+                   trans[i].fromId, targetId, trans[i].amount);
+            hasTrans = 1;
+        }
+    }
+    if (!hasTrans)
+    {
+        printf("Tai khoan chua co giao dich\n");
+    }
+    printf("====================================\n");
+}
+
+int main()
+{
+    transaction trans[100]; 
+    int transCount = 0;      
     int choice;
     int accountCount = 0;
     account accounts[MAX_ACCOUNT];
@@ -650,12 +763,15 @@ void sortAccounts(account accounts[], int accountCount) {
         case 6:
             sortAccounts(accounts, accountCount);
             break;
+        case 7:
+            transferMoney(accounts, accountCount, trans, &transCount);
+            break;
+        case 8:
+            viewHistory(accounts, accountCount, trans, transCount);
+            break;
         case 9:
             printf("Bye!\n");
             return 0;
-        default:
-            printf("Lua chon khong hop le\n");
-            break;
         }
     } while (choice != 9);
 
